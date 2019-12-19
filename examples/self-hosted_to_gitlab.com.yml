@@ -1,0 +1,23 @@
+
+servers:
+  source:
+    url: 'http://myOwn-gitlab-server.example.com'
+    auth_token: XYZ
+    api_version: 4
+
+  destination:
+    url: 'http://gitlab.com'
+    auth_token: DFJDFJ
+    api_version: 4
+
+migrate:
+  groups:
+    myGroup:
+      destination: 'mainGroup/myGroup'
+      projects: '--all--'
+  users:
+    user1:
+      destination: userOtherName
+      projects:
+        - project1
+        - project2
