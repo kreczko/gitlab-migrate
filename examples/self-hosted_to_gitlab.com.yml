@@ -15,9 +15,7 @@ migrate:
     myGroup:
       destination: 'mainGroup/myGroup'
       projects: '--all--'
-  users:
-    user1:
-      destination: userOtherName
-      projects:
-        - project1
-        - project2
+  user:
+    projects:
+      - project1
+      - project2
