@@ -107,9 +107,11 @@ def import_project(connection, project, destination):
             else:
                 output = connection.projects.import_project(f, path=project.name, namespace=destination.id, overwrite=True)
             project_import = connection.projects.get(output['id'], lazy=True).imports.get()
-            while project_import.import_status != 'finished':
+            while project_import.import_status not in ['finished', 'failed']:
                 time.sleep(1)
                 project_import.refresh()
                 print(project_import.import_status)
+            if project_import.import_status == 'failed':
+                print('Unable to import project:', project_import.import_error)
     except gitlab.exceptions.GitlabHttpError as e:
         print(' >>>> Unable to import project', project.name, ':', e)
