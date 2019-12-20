@@ -4,6 +4,11 @@ Migration utility for GitLab servers
 
 
 ## Usage
+### Preparation
+1. Get private token from source GitLab instance
+2. Get private token from destination GitLab instance
+3. Create a configuration file (see examples/)
+4. Run one of the commands below
 
 ### Information
 ```
