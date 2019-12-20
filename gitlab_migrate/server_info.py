@@ -53,14 +53,14 @@ def get_project_data(projects):
 def cli(config_file, output_file, server):
     config = cfg.load(config_file)
     df = None
-    gitlab_instance = config.servers[server]['url']
-    gitlab_token = config.servers[server]['auth_token']
+    gitlab_instance = config.servers[server].url
+    gitlab_token = config.servers[server].auth_token
 
     print('Gathering info from', gitlab_instance)
     if not os.path.exists(output_file):
         gl = glc.connect(gitlab_instance, gitlab_token)
         projects = []
-        groups = config.servers[server].get('group', None)
+        groups = config.servers[server].group
 
         projects = glc.projects(gl, groups=groups, statistics=True)
 

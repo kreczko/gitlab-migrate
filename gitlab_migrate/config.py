@@ -9,5 +9,17 @@ def load(config_file):
 class Config(object):
     __slots__ = ['servers', 'migrate']
     def __init__(self, servers, migrate):
-        self.servers = servers
+        self.servers = {name: Server(config) for name, config in servers.items()}
         self.migrate = migrate
+
+class Server(object):
+    __slots__ = ['url', 'auth_token', 'api_version', 'group']
+    def __init__(self, server):
+        self.url = server['url']
+        self.auth_token = server['auth_token']
+        self.api_version = server['api_version'] if 'api_version' in server else 4
+        self.group = server['group'] if 'group' in server else None
+
+
+class Migrate(object):
+    __slots__ = ['groups', 'users']
