@@ -112,6 +112,7 @@ def import_project(connection, project, destination):
                 project_import.refresh()
                 print(project_import.import_status)
             if project_import.import_status == 'failed':
+                # TODO: remove failed project
                 print('Unable to import project:', project_import.import_error)
     except gitlab.exceptions.GitlabHttpError as e:
         print(' >>>> Unable to import project', project.name, ':', e)

@@ -93,7 +93,7 @@ def cli(config_file, version, plain):
     if not group_instructions and not user_instructions:
         sys.exit(1)
 
-    if click.confirm('Do you want to archive (mark as read-only) all exported projects?'):
+    if click.confirm('Do you want to archive (mark as read-only, reversible) all exported projects?'):
         print(' >> Archiving (marking as read-only) all exported projects')
         for project, _ in group_instructions:
             print('Archiving', project.name)
