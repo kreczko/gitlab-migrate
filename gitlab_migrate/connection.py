@@ -105,7 +105,7 @@ def import_project(connection, project, destination):
             if type(destination).__name__ == 'User':
                 output = connection.projects.import_project(f, path=project.name, override=True)
             else:
-                output = connection.projects.import_project(f, path=project.name, namespace=destination.id, override=True)
+                output = connection.projects.import_project(f, path=project.name, namespace=destination.id, overwrite=True)
             project_import = connection.projects.get(output['id'], lazy=True).imports.get()
             while project_import.import_status != 'finished':
                 time.sleep(1)
