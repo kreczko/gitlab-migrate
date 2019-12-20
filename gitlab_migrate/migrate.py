@@ -96,11 +96,12 @@ def cli(config_file, version, plain):
     if click.confirm('Do you want to archive (mark as read-only) all exported projects?'):
         print(' >> Archiving (marking as read-only) all exported projects')
         for project, _ in group_instructions:
+            print('Archiving', project.name)
             project.archive()
-            pass
         for project in user_instructions:
+            print('Archiving', project.name)
             project.archive()
-            pass
+
     else:
         print('All done!')
 
