@@ -1,19 +1,17 @@
 import gitlab
+import os
+import time
 
-GL_CONN = None
-
-def connect(gitlab_instance, gitlab_token):
-    global GL_CONN
-    if GL_CONN is None:
-        GL_CONN = gitlab.Gitlab(gitlab_instance, private_token=gitlab_token)
-        GL_CONN.auth()
+def connect(gitlab_instance, gitlab_token, api_version=4):
+    GL_CONN = gitlab.Gitlab(gitlab_instance, private_token=gitlab_token, api_version=api_version)
+    GL_CONN.auth()
 
     return GL_CONN
 
 def _projects_from_group(connection, group, statistics=True):
     gl = connection
     projects = []
-    results = gl.groups.list(search=group, statistics=statistics)
+    results = gl.groups.list(search=group, statistics=statistics, include_subgroups=True)
     if len(results) > 1:
         print('Found more than one group matching "{}" - aborting'.format(search_for))
         return 1
@@ -50,3 +48,60 @@ def projects(connection, names=None, groups=None, statistics=True):
         else:
             results = gl.projects.list(all=True, statistics=statistics)
     return results
+
+def user_projects(connection, names=None, statistics=True):
+    current_user = connection.users.get(connection.user.id)
+    projects = current_user.projects.list(statistics=statistics)
+    if names:
+        projects = list(filter(lambda x: x.name in names, projects))
+    return projects
+
+def export_project(project):
+    print('Starting export process for project', project.name)
+    export_file = '/tmp/{}.tgz'.format(project.name)
+    if os.path.exists(export_file):
+        print('Export file for project {} already exists: {}'.format(project.name, export_file))
+        return export_file
+    export = project.exports.create({})
+    export.refresh()
+    while export.export_status != 'finished':
+        time.sleep(1)
+        export.refresh()
+    with open(export_file, 'wb') as f:
+        export.download(streamed=True, action=f.write)
+    return export_file
+
+def find_group(connection, group, statistics=False):
+    if '/' in group:
+        tokens = group.split('/')
+        results = []
+        current_group = None
+        for search_for in tokens:
+            if current_group is None:
+                current_group = connection.groups.list(search=search_for, statistics=statistics, include_subgroups=True)[0]
+            else:
+                current_group = current_group.subgroups.list(search=search_for, statistics=statistics, include_subgroups=True)[0]
+        # full API access only through groups.get
+        current_group = connection.groups.get(current_group.id)
+        return current_group
+    else:
+        current_group = connection.groups.list(search=group, statistics=statistics)[0]
+        return current_group
+
+
+def import_project(connection, project, destination):
+    # print(dir(destination))
+    # return
+    export_file = export_project(project)
+    print('Importing', project.name, 'to', destination.name)
+
+    # new_project = connection.projects.create({'name':project.name, 'namespace_id': destination.id})
+    try:
+        with open(export_file, 'rb') as f:
+            output = connection.projects.import_project(f, path=project.name, namespace=destination.id, override=True)
+            project_import = connection.projects.get(output['id'], lazy=True).imports.get()
+            while project_import.import_status != 'finished':
+                time.sleep(1)
+                project_import.refresh()
+    except gitlab.exceptions.GitlabHttpError as e:
+        print(' >>>> Unable to import project', project.name, ':', e)

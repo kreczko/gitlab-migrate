@@ -10,7 +10,7 @@ class Config(object):
     __slots__ = ['servers', 'migrate']
     def __init__(self, servers, migrate):
         self.servers = {name: Server(config) for name, config in servers.items()}
-        self.migrate = migrate
+        self.migrate = Migrate(**migrate)
 
 class Server(object):
     __slots__ = ['url', 'auth_token', 'api_version', 'group']
@@ -22,4 +22,8 @@ class Server(object):
 
 
 class Migrate(object):
-    __slots__ = ['groups', 'users']
+    __slots__ = ['groups', 'user']
+
+    def __init__(self, groups=None, user=None):
+        self.groups = groups
+        self.user = user
