@@ -51,7 +51,10 @@ def projects(connection, names=None, groups=None, statistics=True):
 
 def user_projects(connection, names=None, statistics=True):
     current_user = connection.users.get(connection.user.id)
-    projects = current_user.projects.list(statistics=statistics)
+    projects_tmp = current_user.projects.list(statistics=statistics)
+    projects = []
+    for p in projects_tmp:
+        projects.append(connection.projects.get(p.id, statistics=statistics))
     if names:
         projects = list(filter(lambda x: x.name in names, projects))
     return projects
@@ -98,10 +101,15 @@ def import_project(connection, project, destination):
     # new_project = connection.projects.create({'name':project.name, 'namespace_id': destination.id})
     try:
         with open(export_file, 'rb') as f:
-            output = connection.projects.import_project(f, path=project.name, namespace=destination.id, override=True)
+            output = None
+            if type(destination).__name__ == 'User':
+                output = connection.projects.import_project(f, path=project.name, override=True)
+            else:
+                output = connection.projects.import_project(f, path=project.name, namespace=destination.id, override=True)
             project_import = connection.projects.get(output['id'], lazy=True).imports.get()
             while project_import.import_status != 'finished':
                 time.sleep(1)
                 project_import.refresh()
+                print(project_import.import_status)
     except gitlab.exceptions.GitlabHttpError as e:
         print(' >>>> Unable to import project', project.name, ':', e)
