@@ -12,8 +12,8 @@ Migration utility for GitLab servers
 
 ### Information
 ```
-gitlab-migrate config.yml --output-file=repos_src.csv
-gitlab-migrate config.yml --output-file=repos_dst.csv --server=destination
+gitlab-migrate-info config.yml --output-file=repos_src.csv
+gitlab-migrate-info config.yml --output-file=repos_dst.csv --server=destination
 ```
 
 ### Migration
