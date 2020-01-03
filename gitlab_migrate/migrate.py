@@ -45,7 +45,8 @@ def migration_instructions(conn_src, conn_dst, migrate):
 @click.argument('config_file', type=click.Path(exists=True), required=False)
 @click.option('--version', is_flag=True)
 @click.option('--plain', is_flag=True)
-def cli(config_file, version, plain):
+@click.option('--noop', is_flag=True)
+def cli(config_file, version, plain, noop):
     if version:
         print_version(plain)
         return 0
@@ -59,13 +60,15 @@ def cli(config_file, version, plain):
 
     group_instructions, user_instructions = migration_instructions(gl_src, gl_dst, config.migrate)
 
+    print(group_instructions, user_instructions)
     for project, destination in group_instructions:
         print(' >> Going to migrate project {} to {}/{}/{}'.format(
             project.name, dst_server.url, destination.name, project.name
         )
         )
-
-        glc.import_project(gl_dst, project, destination)
+        if not noop:
+            print(' >>>> Importing project', project)
+            glc.import_project(gl_dst, project, destination)
 
     dst_user = gl_dst.users.get(gl_dst.user.id)
     for project in user_instructions:
@@ -73,7 +76,9 @@ def cli(config_file, version, plain):
             project.name, dst_server.url, gl_dst.user.username
         )
         )
-        glc.import_project(gl_dst, project, dst_user)
+        if not noop:
+            print(' >>>> Importing project', project)
+            glc.import_project(gl_dst, project, dst_user)
     # print(group_instructions, user_instructions)
 
     # projects = glc.projects(gl, groups=groups, statistics=True)
@@ -84,6 +89,10 @@ def cli(config_file, version, plain):
     #     glc.export_project(project)
     if not group_instructions and not user_instructions:
         sys.exit(1)
+
+    if noop:
+        print('Running with "--noop" nothing to do!')
+        return
 
     if click.confirm('Do you want to archive (mark as read-only, reversible) all exported projects?'):
         print(' >> Archiving (marking as read-only) all exported projects')
