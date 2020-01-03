@@ -1,0 +1,47 @@
+# Config file for automatic testing at travis-ci.org
+dist: xenial
+language: python
+cache: pip
+
+stages:
+  - quick-checks
+  - test
+  -
+    if: tag =~ ^v\d
+    name: deploy
+
+script:
+  - 'python -m pip install -e .[test]'
+  - 'make $CHECK'
+
+matrix:
+  fast_finish: true
+  include:
+    -
+      python: 3.6
+      stage: quick-checks
+      env: CHECK="lint"
+    -
+      python: 3.6
+      stage: test
+      env: CHECK="test"
+    -
+      python: 3.7
+      stage: test
+      env: CHECK="test"
+    -
+      python: 3.7
+      stage: deploy
+      env: DEPLOY_TO_PYPI=yes
+
+deploy:
+  provider: pypi
+  user:
+    secure: "bo2zg2YYikp2LB2N4ndpEtMx/Gq6ShjLUKiBn/Be4Y4U4oARjil+E3lXyb/nk9VR6DDW5GU0X/Swc08UeKEA2fm5LzyD6T883tiF6e4k5FTv0QBDWqcNqgxnWIusJOW1d/eRv6Ysno5BlBd/8y5+7IS93PwSIyWVQN07azQumtguLYBTkgg9dsTauuJZySViV3o77S3VR2LFs4RPJx1cCryXdWKzT043QbUNLiBfB7nxyvDBYuNOhkphjoWPG5anNjDhJdLFKJ0IkTk4c6pQD9Ru3yEpvW9ij4H7fjV5XQOVl3ksf+k5MTiE8cu7yzcMoNDCBi47JX5PO1OMA96OiDuC2d/ld2MOOUdIdLZSMSI9qvCF51lqOaTE01Xn6tvUoGimKnmW/LuUkNV4YUMIPW3ltkii2Xs2V+pS1wCx4L7gF3qdV+R+6QA9EA1a+oMbqBkvN+0DVRTgha+JGpUc7B2zEsS2TLw7PnlsVok4MnNviU+KyANCcnDd+rNmaWHHHWndAXnvY0ule+R/Xme4qGHXTO9Xva3expzaTyQfS40NRMk0KfR1jS0/fPa+qT3yEEQlfqWzlid6VCrZB5448f09YKj2xL1414M4HhVL1K7TcAA2MkqUyDyrzuTGpRRBHqjEUtSEllCmh5AHMZdUMU5WvN3GE/BI3ZI1HO/IQl0="
+  password:
+    secure: "MzOX70SqdE+9auRJ3mBZSZnYQADrasiiE4saNTsP7MCuqVCQ2iEe3KFDKB9Xi5pJuYKPhmlIQYjaTBt2yyJnmRamkNxW8EXC9xNZJPBA9GDoK7TAURunS/txqP+aq4C4ZPkjReKWAgE2HCGIBIdX3uu5JN9amu3fYTYrg/VVty8a4eox5MoCOu0ZAPbe2mxhMaBnsF62OCVn26t61koPzhUUxl0DPNU6nGbgZ3NylNR/fisb3frdSl5fkc6wN/qC/FAmZg1z5dyrusG1rfSm2X5QujO9XZqpuBDJQAUYrkCwXtIhM+E3RYXief6+v8vQq6ejeZHAyorzDrnBQTFhcwts1HckB07lL5N+4WJtzP1q24lUt2SVe36MK/nOrxVMwV/KlW37rEakEiXq96b/CmLgJDkTq7peJ6ZCs5b7ppcccVTtRf7pb/Q/bfv1m/Fv21ZgnNJr/A29SS8nip/Ym0sLNnuPjtCHls2pP3YOCt4FFMNty/GC4G+enlBmXsX+j0dzjQwAf6qkQWlGXq6ArNCY40in0+5fohHToFoMnMreUNXPSRRzh8NErC4OGLlTpAjSrcDhMN45QdO3Ss925LXXz3w6vX/gP0H7UoHXSnXVly33g8AHUVNN884f5K9+crZPaE27c7lCAL9m1FdFxvL9+QftKPMcRqsd4YwXQ20="
+  on:
+    tags: true
+    branch: master
+    condition: '$DEPLOY_TO_PYPI = yes'
+    skip_existing: true
