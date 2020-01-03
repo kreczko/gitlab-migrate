@@ -84,6 +84,9 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
+    extras_require={
+        'tests': test_requirements,
+    }
     url='https://github.com/kreczko/gitlab-migrate',
     version=find_version("gitlab_migrate", '__init__.py'),
     zip_safe=False,
