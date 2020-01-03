@@ -13,7 +13,7 @@ def _projects_from_group(connection, group, statistics=True):
     projects = []
     results = gl.groups.list(search=group, statistics=statistics, include_subgroups=True)
     if len(results) > 1:
-        print('Found more than one group matching "{}" - aborting'.format(search_for))
+        print('Found more than one group matching "{}" - aborting'.format(group))
         return 1
     gl_group = results[0]
     # this never gives statistics
@@ -25,10 +25,9 @@ def _projects_from_group(connection, group, statistics=True):
 
 def _project_by_name(connection, name, statistics=True):
     gl = connection
-    project = None
     results = gl.projects.list(search=name, statistics=statistics)
     if len(results) > 1:
-        print('Found more than one group matching "{}" - aborting'.format(search_for))
+        print('Found more than one group matching "{}" - aborting'.format(name))
         return 1
     return results[0]
 
@@ -44,7 +43,7 @@ def projects(connection, names=None, groups=None, statistics=True):
             results = list(filter(lambda x: x.name in names, results))
     else:
         if names:
-            results = [_projects_by_name(gl, name, statistics) for name in names]
+            results = [_project_by_name(gl, name, statistics) for name in names]
         else:
             results = gl.projects.list(all=True, statistics=statistics)
     return results
@@ -77,13 +76,16 @@ def export_project(project):
 def find_group(connection, group, statistics=False):
     if '/' in group:
         tokens = group.split('/')
-        results = []
         current_group = None
         for search_for in tokens:
             if current_group is None:
-                current_group = connection.groups.list(search=search_for, statistics=statistics, include_subgroups=True)[0]
+                current_group = connection.groups.list(
+                    search=search_for, statistics=statistics, include_subgroups=True
+                )[0]
             else:
-                current_group = current_group.subgroups.list(search=search_for, statistics=statistics, include_subgroups=True)[0]
+                current_group = current_group.subgroups.list(
+                    search=search_for, statistics=statistics, include_subgroups=True
+                )[0]
         # full API access only through groups.get
         current_group = connection.groups.get(current_group.id)
         return current_group
@@ -105,7 +107,9 @@ def import_project(connection, project, destination):
             if type(destination).__name__ == 'User':
                 output = connection.projects.import_project(f, path=project.name, override=True)
             else:
-                output = connection.projects.import_project(f, path=project.name, namespace=destination.id, overwrite=True)
+                output = connection.projects.import_project(
+                    f, path=project.name, namespace=destination.id, overwrite=True,
+                )
             project_import = connection.projects.get(output['id'], lazy=True).imports.get()
             while project_import.import_status not in ['finished', 'failed']:
                 time.sleep(1)

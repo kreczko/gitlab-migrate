@@ -1,7 +1,5 @@
 """Print scikit-validate version"""
 import click
-import os
-import time
 import sys
 
 from . import __version__
@@ -43,7 +41,6 @@ def migration_instructions(conn_src, conn_dst, migrate):
     return instructions, user_projects
 
 
-
 @click.command(help=__doc__)
 @click.argument('config_file', type=click.Path(exists=True), required=False)
 @click.option('--version', is_flag=True)
@@ -53,7 +50,6 @@ def cli(config_file, version, plain):
         print_version(plain)
         return 0
     config = cfg.load(config_file)
-    df = None
 
     src_server = config.servers['source']
     dst_server = config.servers['destination']
@@ -63,23 +59,19 @@ def cli(config_file, version, plain):
 
     group_instructions, user_instructions = migration_instructions(gl_src, gl_dst, config.migrate)
 
-
     for project, destination in group_instructions:
         print(' >> Going to migrate project {} to {}/{}/{}'.format(
-                project.name, dst_server.url, destination.name, project.name
-            )
+            project.name, dst_server.url, destination.name, project.name
+        )
         )
 
         glc.import_project(gl_dst, project, destination)
 
-
-
-
     dst_user = gl_dst.users.get(gl_dst.user.id)
     for project in user_instructions:
         print(' >> Going to migrate project {} to {}/{}'.format(
-                project.name, dst_server.url, gl_dst.user.username
-            )
+            project.name, dst_server.url, gl_dst.user.username
+        )
         )
         glc.import_project(gl_dst, project, dst_user)
     # print(group_instructions, user_instructions)
@@ -104,5 +96,3 @@ def cli(config_file, version, plain):
 
     else:
         print('All done!')
-
-

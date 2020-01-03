@@ -8,12 +8,14 @@ def load(config_file):
 
 class Config(object):
     __slots__ = ['servers', 'migrate']
+
     def __init__(self, servers, migrate):
         self.servers = {name: Server(config) for name, config in servers.items()}
         self.migrate = Migrate(**migrate)
 
 class Server(object):
     __slots__ = ['url', 'auth_token', 'api_version', 'group']
+
     def __init__(self, server):
         self.url = server['url']
         self.auth_token = server['auth_token']

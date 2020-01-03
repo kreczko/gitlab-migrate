@@ -7,7 +7,6 @@ Usage:
 import os
 
 import click
-import numpy as np
 import pandas as pd
 
 from . import config as cfg
@@ -23,8 +22,8 @@ def inspect_project(project):
         project.name,
         project.id,
         project.path_with_namespace,
-        project.namespace['kind']=='group',
-        project.namespace['kind']=='user',
+        project.namespace['kind'] == 'group',
+        project.namespace['kind'] == 'user',
     ]
     if hasattr(project, 'statistics'):
         values += [
@@ -69,11 +68,10 @@ def cli(config_file, output_file, server):
     else:
         df = pd.read_csv(output_file, index_col=0)
 
-    totalSpaceUsed = df['storage_size'].sum()/1024./1014.
+    totalSpaceUsed = df['storage_size'].sum() / 1024. / 1014.
 
     print('Found', len(df), 'repositories using {:.1f} MB of space.'.format(totalSpaceUsed))
 
-    df['user'] = df['path_with_namespace'].str.split('/').apply(lambda x: x[0])
-    user_repos = df[df.owner_is_user]
-    by_user = user_repos.groupby('user')
-
+    # df['user'] = df['path_with_namespace'].str.split('/').apply(lambda x: x[0])
+    # user_repos = df[df.owner_is_user]
+    # by_user = user_repos.groupby('user')

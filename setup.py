@@ -52,7 +52,7 @@ setup_requirements = [
     # 'pytest-runner',
 ]
 
-test_requirements = ['pytest', 'hypothesis', ]
+test_requirements = ['flake8', 'hypothesis', 'pytest',]
 
 setup(
     author="Luke Kreczko",
