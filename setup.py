@@ -77,6 +77,7 @@ setup(
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + '\n\n' + history,
+    long_description_content_type='text/markdown',
     include_package_data=True,
     keywords='gitlab,migrate',
     name='gitlab-migrate',
@@ -86,7 +87,7 @@ setup(
     tests_require=test_requirements,
     extras_require={
         'tests': test_requirements,
-    }
+    },
     url='https://github.com/kreczko/gitlab-migrate',
     version=find_version("gitlab_migrate", '__init__.py'),
     zip_safe=False,
