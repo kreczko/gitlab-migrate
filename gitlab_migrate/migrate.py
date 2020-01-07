@@ -36,7 +36,7 @@ def migration_instructions(conn_src, conn_dst, migrate):
     if user:
         names = None
         if user['projects'] != '--all--':
-            names = content['projects']
+            names = user['projects']
         user_projects = glc.user_projects(conn_src, names=names, statistics=False)
     return instructions, user_projects
 
