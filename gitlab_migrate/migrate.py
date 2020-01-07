@@ -60,7 +60,7 @@ def cli(config_file, version, plain, noop):
 
     group_instructions, user_instructions = migration_instructions(gl_src, gl_dst, config.migrate)
 
-    print(group_instructions, user_instructions)
+    # print(group_instructions, user_instructions)
     for project, destination in group_instructions:
         print(' >> Going to migrate project {} to {}/{}/{}'.format(
             project.name, dst_server.url, destination.name, project.name

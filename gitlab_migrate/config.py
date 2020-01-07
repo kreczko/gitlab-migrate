@@ -27,5 +27,5 @@ class Migrate(object):
     __slots__ = ['groups', 'user']
 
     def __init__(self, groups=None, user=None):
-        self.groups = groups
+        self.groups = groups if groups is not None else {}
         self.user = user
