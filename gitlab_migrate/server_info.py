@@ -59,9 +59,16 @@ def cli(config_file, output_file, server):
     if not os.path.exists(output_file):
         gl = glc.connect(gitlab_instance, gitlab_token)
         projects = []
-        groups = config.servers[server].group
+        groups = config.migrate.groups.keys()
 
-        projects = glc.projects(gl, groups=groups, statistics=True)
+        if groups:
+            projects += glc.projects(gl, groups=groups, statistics=True)
+        user = config.migrate.user
+        if user:
+            names = None
+            if user['projects'] != '--all--':
+                names = user['projects']
+            projects += glc.user_projects(gl, names=names, statistics=True)
 
         df = get_project_data(projects)
         df.to_csv(output_file)
