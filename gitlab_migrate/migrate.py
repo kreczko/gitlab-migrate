@@ -7,6 +7,7 @@ from . import __version__
 from . import config as cfg
 from . import connection as glc
 
+
 def print_version(plain):
     if plain:
         click.echo(__version__)
@@ -67,7 +68,7 @@ def cli(config_file, version, plain, noop):
         )
         )
         if not noop:
-            print(' >>>> Importing project', project)
+            print(' >>>> Importing project', project.name)
             glc.import_project(gl_dst, project, destination)
 
     dst_user = gl_dst.users.get(gl_dst.user.id)
@@ -77,7 +78,7 @@ def cli(config_file, version, plain, noop):
         )
         )
         if not noop:
-            print(' >>>> Importing project', project)
+            print(' >>>> Importing project', project.name)
             glc.import_project(gl_dst, project, dst_user)
     # print(group_instructions, user_instructions)
 
