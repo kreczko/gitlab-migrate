@@ -82,11 +82,11 @@ changelog:
 	@echo "Updating CHANGELOG.md"
 	@github_changelog_generator -u kreczko -p gitlab-migrate -t ${CHANGELOG_GITHUB_TOKEN}
 	@echo "Updating HISTORY.rst"
-	#@gitchangelog ^v`<gitlab-migrate-version>` HEAD | cat - HISTORY.rst > HISTORY.tmp
-	@mv HISTORY.tmp HISTORY.rst
+	# @gitchangelog ^v`<gitlab-migrate-version>` HEAD | cat - HISTORY.rst > HISTORY.tmp
+	# @mv HISTORY.tmp HISTORY.rst
 
 update_release:
-	@python update_release.py
+	# @python update_release.py
 	@echo "Check everything and if OK, execute"
 	@echo "git add -u"
 	@echo "git commit -m 'tagged version ${RELEASE}'"
