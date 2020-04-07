@@ -15,8 +15,19 @@ def _projects_from_group(connection, group, statistics=True):
     projects = []
     results = gl.groups.list(search=group, statistics=statistics, include_subgroups=True)
     if len(results) > 1:
-        print('Found more than one group matching "{}" - aborting'.format(group))
-        return 1
+        groups = [(g.id, g.name) for g in results]
+        msg = 'Found more than one group matching "{}" [{}] - trying to resolve'.format(group, groups)
+        print(msg)
+        # mimick exact search
+        exact_match = None
+        for g in results:
+            if g.name == group:
+                exact_match = [g]
+                break
+        results = exact_match
+    if not results:
+        msg = 'Unable to find group matching "{}" - aborting'.format(group)
+        raise NameError(msg)
     gl_group = results[0]
     # this never gives statistics
     projects_tmp = gl_group.projects.list(all=True, include_subgroups=True)
