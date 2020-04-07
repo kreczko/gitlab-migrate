@@ -2,8 +2,10 @@ import gitlab
 import os
 import time
 
-def connect(gitlab_instance, gitlab_token, api_version=4):
-    GL_CONN = gitlab.Gitlab(gitlab_instance, private_token=gitlab_token, api_version=api_version)
+def connect(gitlab_instance, gitlab_token, api_version=4, ssl_verify=True):
+    GL_CONN = gitlab.Gitlab(
+        gitlab_instance, private_token=gitlab_token, api_version=api_version, ssl_verify=ssl_verify
+    )
     GL_CONN.auth()
 
     return GL_CONN
