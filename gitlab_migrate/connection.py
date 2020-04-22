@@ -121,10 +121,10 @@ def import_project(connection, project, destination):
         with open(export_file, 'rb') as f:
             output = None
             if type(destination).__name__ == 'User':
-                output = connection.projects.import_project(f, path=project.name, override=True)
+                output = connection.projects.import_project(f, path=project.path, override=True)
             else:
                 output = connection.projects.import_project(
-                    f, path=project.name, namespace=destination.id, overwrite=True,
+                    f, path=project.path, namespace=destination.id, overwrite=True,
                 )
             print(' >>>> Import in progress')
             project_import = connection.projects.get(output['id'], lazy=True).imports.get()
