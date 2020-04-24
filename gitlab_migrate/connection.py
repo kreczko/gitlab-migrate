@@ -90,15 +90,18 @@ def find_group(connection, group, statistics=False):
     if '/' in group:
         tokens = group.split('/')
         current_group = None
+        base_group = None
         for search_for in tokens:
             if current_group is None:
                 current_group = connection.groups.list(
                     search=search_for, statistics=statistics, include_subgroups=True
                 )[0]
+                base_group = current_group
             else:
-                current_group = current_group.subgroups.list(
+                current_group = base_group.subgroups.list(
                     search=search_for, statistics=statistics, include_subgroups=True
                 )[0]
+                base_group = connection.groups.get(current_group.id)
         # full API access only through groups.get
         current_group = connection.groups.get(current_group.id)
         return current_group
@@ -118,10 +121,10 @@ def import_project(connection, project, destination):
         with open(export_file, 'rb') as f:
             output = None
             if type(destination).__name__ == 'User':
-                output = connection.projects.import_project(f, path=project.name, override=True)
+                output = connection.projects.import_project(f, path=project.path, override=True)
             else:
                 output = connection.projects.import_project(
-                    f, path=project.name, namespace=destination.id, overwrite=True,
+                    f, path=project.path, namespace=destination.id, overwrite=True,
                 )
             print(' >>>> Import in progress')
             project_import = connection.projects.get(output['id'], lazy=True).imports.get()
