@@ -57,7 +57,7 @@ def cli(config_file, version, plain, noop):
     dst_server = config.servers['destination']
 
     gl_src = glc.connect(src_server.url, src_server.auth_token, ssl_verify=src_server.ssl_verify)
-    gl_dst = glc.connect(dst_server.url, dst_server.auth_token, ssl_verify=src_server.ssl_verify)
+    gl_dst = glc.connect(dst_server.url, dst_server.auth_token, ssl_verify=dst_server.ssl_verify)
 
     group_instructions, user_instructions = migration_instructions(gl_src, gl_dst, config.migrate)
 
